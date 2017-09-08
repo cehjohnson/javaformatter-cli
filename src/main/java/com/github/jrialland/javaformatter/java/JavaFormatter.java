@@ -60,7 +60,8 @@ public class JavaFormatter implements SourceFormatter {
 
 	private String source = "1.8";
 
-	private String lineSep = "\r\n";
+	// The default separator should be that of the OS
+	private String lineSep = System.getProperty("line.separator");
 
 	private String encoding = "utf-8";
 
