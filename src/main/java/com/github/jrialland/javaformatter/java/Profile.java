@@ -31,7 +31,7 @@ import java.util.Map;
 public class Profile {
 
 	private String kind;
-	private Map<String, String> settings = new HashMap<>();
+	private Map<String, String> settings = new HashMap<String, String>();
 
 	public Profile() {
 	}

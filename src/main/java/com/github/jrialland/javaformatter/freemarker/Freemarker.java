@@ -114,7 +114,7 @@ public class Freemarker implements Transpiler {
       @SuppressWarnings("unchecked")
       Map<String, Object> child = (Map<String, Object>) current.get(part);
       if (child == null) {
-        child = new HashMap<>();
+        child = new HashMap<String, Object>();
         current.put(part, child);
       }
       current = child;

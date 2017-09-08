@@ -33,7 +33,7 @@ public class Profiles {
 
 	public static final String PROFILE_KIND = "CodeFormatterProfile";
 
-	private List<Map<String, String>> profiles = new ArrayList<>();
+	private List<Map<String, String>> profiles = new ArrayList<Map<String, String>>();
 
 	public Profiles() {
 	}

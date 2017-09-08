@@ -113,7 +113,7 @@ public class JavaFormatter implements SourceFormatter {
 
 	public JavaFormatter() {
 		super();
-		options = new TreeMap<>();
+		options = new TreeMap<String, String>();
 		options.put(JavaCore.COMPILER_SOURCE, source);
 		options.put(JavaCore.COMPILER_COMPLIANCE, source);
 		options.put(JavaCore.CORE_ENCODING, encoding);
