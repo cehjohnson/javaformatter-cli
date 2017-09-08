@@ -41,115 +41,130 @@ import org.slf4j.LoggerFactory;
 
 public class FormatterVisitor {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(FormatterVisitor.class);
+   private static final Logger LOGGER = LoggerFactory
+         .getLogger(FormatterVisitor.class);
 
-	private static final Logger getLog() {
-		return LOGGER;
-	}
+   private static final Logger getLog() {
+      return LOGGER;
+   }
 
-	public void visitWithFormatters(Path dir, final List<SourceFormatter> formatters) {
-		try {
+   public void visitWithFormatters(Path dir,
+         final List<SourceFormatter> formatters) {
+      try {
 
-			Files.walkFileTree(dir, new FileVisitor<Path>() {
-				@Override
-				public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
-					return FileVisitResult.CONTINUE;
-				}
+         Files.walkFileTree(dir, new FileVisitor<Path>() {
+            @Override
+            public FileVisitResult postVisitDirectory(Path dir, IOException exc)
+                  throws IOException {
+               return FileVisitResult.CONTINUE;
+            }
 
-				@Override
-				public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-					return FileVisitResult.CONTINUE;
-				}
+            @Override
+            public FileVisitResult preVisitDirectory(Path dir,
+                  BasicFileAttributes attrs) throws IOException {
+               return FileVisitResult.CONTINUE;
+            }
 
-				@Override
-				public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-					applyAllFormattersOnFile(file, formatters);
-					return FileVisitResult.CONTINUE;
-				}
+            @Override
+            public FileVisitResult visitFile(Path file,
+                  BasicFileAttributes attrs) throws IOException {
+               applyAllFormattersOnFile(file, formatters);
+               return FileVisitResult.CONTINUE;
+            }
 
-				@Override
-				public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
-					throw new RuntimeException("while applying formatters", exc);
-				}
-			});
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
+            @Override
+            public FileVisitResult visitFileFailed(Path file, IOException exc)
+                  throws IOException {
+               throw new RuntimeException("while applying formatters", exc);
+            }
+         });
+      } catch (IOException e) {
+         throw new RuntimeException(e);
+      }
+   }
 
-	public void visitWithTranspiler(Path dir, final Transpiler transpiler) {
-		try {
+   public void visitWithTranspiler(Path dir, final Transpiler transpiler) {
+      try {
 
-			Files.walkFileTree(dir, new FileVisitor<Path>() {
-				@Override
-				public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
-					return FileVisitResult.CONTINUE;
-				}
+         Files.walkFileTree(dir, new FileVisitor<Path>() {
+            @Override
+            public FileVisitResult postVisitDirectory(Path dir, IOException exc)
+                  throws IOException {
+               return FileVisitResult.CONTINUE;
+            }
 
-				@Override
-				public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-					if (transpiler.accept(dir)) {
-						transpiler.transpile(dir);
-					}
-					return FileVisitResult.CONTINUE;
-				}
+            @Override
+            public FileVisitResult preVisitDirectory(Path dir,
+                  BasicFileAttributes attrs) throws IOException {
+               if (transpiler.accept(dir)) {
+                  transpiler.transpile(dir);
+               }
+               return FileVisitResult.CONTINUE;
+            }
 
-				@Override
-				public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-					applyTranspilerOnFile(file, transpiler);
-					return FileVisitResult.CONTINUE;
-				}
+            @Override
+            public FileVisitResult visitFile(Path file,
+                  BasicFileAttributes attrs) throws IOException {
+               applyTranspilerOnFile(file, transpiler);
+               return FileVisitResult.CONTINUE;
+            }
 
-				@Override
-				public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
-					throw new RuntimeException("while applying transpilers", exc);
-				}
-			});
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
+            @Override
+            public FileVisitResult visitFileFailed(Path file, IOException exc)
+                  throws IOException {
+               throw new RuntimeException("while applying transpilers", exc);
+            }
+         });
+      } catch (IOException e) {
+         throw new RuntimeException(e);
+      }
+   }
 
-	public void applyTranspilerOnFile(Path file, Transpiler transpiler) {
-		if (transpiler.accept(file)) {
-		  getLog().info(String.format("Applying %s on %s", transpiler.getName(), file.toString()));
-			transpiler.transpile(file);
-		}
-	}
+   public void applyTranspilerOnFile(Path file, Transpiler transpiler) {
+      if (transpiler.accept(file)) {
+         getLog().info(
+               String.format("Applying %s on %s", transpiler.getName(),
+                     file.toString()));
+         transpiler.transpile(file);
+      }
+   }
 
-	public void applyAllFormattersOnFile(Path file, List<SourceFormatter> formatters) throws IOException {
-		Path tmpFile = Paths.get(file.toAbsolutePath().toString() + "~");
-		for (SourceFormatter formatter : formatters) {
-			if (formatter.mayApplyOn(file)) {
+   public void applyAllFormattersOnFile(Path file,
+         List<SourceFormatter> formatters) throws IOException {
+      Path tmpFile = Paths.get(file.toAbsolutePath().toString() + "~");
+      for (SourceFormatter formatter : formatters) {
+         if (formatter.mayApplyOn(file)) {
 
-				// get file data
-				byte[] data = Files.readAllBytes(file);
+            // get file data
+            byte[] data = Files.readAllBytes(file);
 
-				// backup
-				Files.move(file, tmpFile, StandardCopyOption.REPLACE_EXISTING);
+            // backup
+            Files.move(file, tmpFile, StandardCopyOption.REPLACE_EXISTING);
 
-				try {
+            try {
 
-					String strData = new String(data);
+               String strData = new String(data);
 
-					getLog().info("applying : " + formatter.getType() + "\ton " + file.toString());
+               getLog().info(
+                     "applying : " + formatter.getType() + "\ton "
+                           + file.toString());
 
-					String modified = formatter.apply(strData);
-					getLog().info(" .. done");
-					Files.copy(new ByteArrayInputStream(modified.getBytes()), file,
-							StandardCopyOption.REPLACE_EXISTING);
+               String modified = formatter.apply(strData);
+               getLog().info(" .. done");
+               Files.copy(new ByteArrayInputStream(modified.getBytes()), file,
+                     StandardCopyOption.REPLACE_EXISTING);
 
-					// rm backup
-					Files.delete(tmpFile);
+               // rm backup
+               Files.delete(tmpFile);
 
-				} catch (Exception e) {
-					getLog().error("formatter error", e);
+            } catch (Exception e) {
+               getLog().error("formatter error", e);
 
-					// replace file with the backup in case of error
-					Files.move(tmpFile, file, StandardCopyOption.REPLACE_EXISTING);
-				}
-			}
-		}
-	}
+               // replace file with the backup in case of error
+               Files.move(tmpFile, file, StandardCopyOption.REPLACE_EXISTING);
+            }
+         }
+      }
+   }
 
 }
