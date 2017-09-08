@@ -32,37 +32,39 @@ import java.util.List;
 
 public class JsFormatter extends AbstractJsBeautifyFormatter {
 
-  private static final List<String> extensions = Arrays.asList(".js", ".json");
+   private static final List<String> extensions = Arrays.asList(".js", ".json");
 
-  public JsFormatter() {
-    super("bower_components/js-beautify/js/lib/beautify.js", "js_beautify",
-        "{space_after_anon_function:true, brace_style:'collapse', end_with_newline:true}");
-  }
+   public JsFormatter() {
+      super(
+            "bower_components/js-beautify/js/lib/beautify.js",
+            "js_beautify",
+            "{space_after_anon_function:true, brace_style:'collapse', end_with_newline:true}");
+   }
 
-  @Override
-  public String getName() {
-    return "JavaScript beautifier";
-  }
+   @Override
+   public String getName() {
+      return "JavaScript beautifier";
+   }
 
-  @Override
-  public String getType() {
-    return "js";
-  }
+   @Override
+   public String getType() {
+      return "js";
+   }
 
-  @Override
-  public boolean mayApplyOn(Path file) {
-    if (Files.isRegularFile(file)) {
-      for (String ext : extensions) {
-        if (file.toString().endsWith(ext)) {
-          return true;
-        }
+   @Override
+   public boolean mayApplyOn(Path file) {
+      if (Files.isRegularFile(file)) {
+         for (String ext : extensions) {
+            if (file.toString().endsWith(ext)) {
+               return true;
+            }
+         }
       }
-    }
-    return false;
-  }
+      return false;
+   }
 
-  @Override
-  public String getShortDesc() {
-    return "Formats javascript files";
-  }
+   @Override
+   public String getShortDesc() {
+      return "Formats javascript files";
+   }
 }

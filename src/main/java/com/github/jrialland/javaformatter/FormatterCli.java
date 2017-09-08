@@ -53,135 +53,151 @@ import com.github.jrialland.javaformatter.xml.XmlFormatter;
 
 public class FormatterCli {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(FormatterCli.class);
-  private static final String FORMATTER_PROFILE_FILENAME = "formatter-profile.xml";
+   private static final Logger LOGGER = LoggerFactory
+         .getLogger(FormatterCli.class);
+   private static final String FORMATTER_PROFILE_FILENAME = "formatter-profile.xml";
 
-  protected static void showHelp(Options opts, List<SourceFormatter> sourceFormatters, List<Transpiler> transpilers) {
-    HelpFormatter helpFormatter = new HelpFormatter();
-    helpFormatter.printHelp(FormatterCli.class.getSimpleName(), opts);
-    System.out.println();
+   protected static void showHelp(Options opts,
+         List<SourceFormatter> sourceFormatters, List<Transpiler> transpilers) {
+      HelpFormatter helpFormatter = new HelpFormatter();
+      helpFormatter.printHelp(FormatterCli.class.getSimpleName(), opts);
+      System.out.println();
 
-    System.out.println("Available source formatters : ");
-    for (SourceFormatter fmt : sourceFormatters) {
-      System.out.println("\t* " + fmt.getName() + " (" + fmt.getShortDesc() + ")");
-    }
-    System.out.println();
+      System.out.println("Available source formatters : ");
+      for (SourceFormatter fmt : sourceFormatters) {
+         System.out.println("\t* " + fmt.getName() + " (" + fmt.getShortDesc()
+               + ")");
+      }
+      System.out.println();
 
-    System.out.println("Available transpilers : ");
-    for (Transpiler transpiler : transpilers) {
-      System.out.println("\t* " + transpiler.getName() + " (" + transpiler.getShortdesc() + ")");
-    }
-    System.out.println();
+      System.out.println("Available transpilers : ");
+      for (Transpiler transpiler : transpilers) {
+         System.out.println("\t* " + transpiler.getName() + " ("
+               + transpiler.getShortdesc() + ")");
+      }
+      System.out.println();
 
-    return;
-  }
-
-  public static void main(String[] args) throws Exception {
-
-    Options opts = new Options();
-
-    Option conf = Option.builder("c").longOpt("conf").required(false).numberOfArgs(1).desc("Eclipse configuration file to use")
-        .argName("eclipseConf").build();
-    opts.addOption(conf);
-
-    Option level = Option.builder("l").longOpt("level").required(false).numberOfArgs(1).argName("javaVersion")
-        .desc("source level").build();
-    opts.addOption(level);
-
-    Option header = Option.builder("H").longOpt("header").required(false).numberOfArgs(1).argName("txtFile")
-        .desc("source file header").build();
-    opts.addOption(header);
-
-    Option encoding = Option.builder("e").longOpt("encoding").required(false).numberOfArgs(1).argName("charset")
-        .desc("source encoding").build();
-    opts.addOption(encoding);
-
-    Option lsep = Option.builder("s").longOpt("linesep").required(false).hasArg(true).argName("crlf_value").build();
-    opts.addOption(lsep);
-
-    Option help = Option.builder("h").longOpt("help").hasArg(false).desc("Shows this help").build();
-    opts.addOption(help);
-
-    CommandLine cmd = new DefaultParser().parse(opts, args);
-
-    List<Transpiler> transpilers = Arrays.asList(new Freemarker(), new CoffeeScript(), new Compass(), new Minifier());
-
-    JavaFormatter javaFormatter;
-    List<SourceFormatter> formatters = new ArrayList<SourceFormatter>();
-
-    // Look for formatter profile file in home directory
-    File profileFile = new File(System.getProperty("user.home"), FORMATTER_PROFILE_FILENAME);
-    if (cmd.hasOption("conf")) {
-      javaFormatter = new JavaFormatter(Paths.get(cmd.getOptionValue("conf")).toUri().toURL());
-    } else if (profileFile.exists()) {
-      javaFormatter = new JavaFormatter(profileFile.toURL());
-    } else {
-      javaFormatter = new JavaFormatter();
-    }
-    formatters.add(javaFormatter);
-    formatters.addAll(Arrays.asList(new HtmlFormatter(), new CssFormatter(), new JsFormatter(), new XmlFormatter()));
-
-    if (cmd.hasOption("help")) {
-      showHelp(opts, formatters, transpilers);
       return;
-    }
+   }
 
-    if (cmd.hasOption("level")) {
-      javaFormatter.setSource(cmd.getOptionValue("level"));
-    }
+   public static void main(String[] args) throws Exception {
 
-    if (cmd.hasOption("encoding")) {
-      javaFormatter.setEncoding(cmd.getOptionValue("encoding"));
-    }
+      Options opts = new Options();
 
-    if (cmd.hasOption("linesep")) {
-      String linesep = cmd.getOptionValue("linesep");
-      if (!Arrays.asList("lf", "cr", "crlf").contains(linesep)) {
-        throw new IllegalArgumentException("linesep : must be one of ['lf', 'cr', 'crlf']");
-      }
-      linesep = linesep.toLowerCase().replaceAll("cr", "\r").replaceAll("lf", "\n");
-      javaFormatter.setLineSep(linesep);
-    }
+      Option conf = Option.builder("c").longOpt("conf").required(false)
+            .numberOfArgs(1).desc("Eclipse configuration file to use")
+            .argName("eclipseConf").build();
+      opts.addOption(conf);
 
-    if (cmd.hasOption("header")) {
-      javaFormatter.setHeader(Paths.get(cmd.getOptionValue("header")).toUri().toURL());
-    }
+      Option level = Option.builder("l").longOpt("level").required(false)
+            .numberOfArgs(1).argName("javaVersion").desc("source level")
+            .build();
+      opts.addOption(level);
 
-    if (args.length == 0) {
-      System.out.println("Missing file or directory parameter.");
-      showHelp(opts, formatters, transpilers);
-      System.exit(255);
-    }
+      Option header = Option.builder("H").longOpt("header").required(false)
+            .numberOfArgs(1).argName("txtFile").desc("source file header")
+            .build();
+      opts.addOption(header);
 
-    Path path = Paths.get(args[args.length - 1]);
+      Option encoding = Option.builder("e").longOpt("encoding").required(false)
+            .numberOfArgs(1).argName("charset").desc("source encoding").build();
+      opts.addOption(encoding);
 
-    if (LOGGER.isDebugEnabled()) {
-      LOGGER.debug("Registered formatters : ");
-      for (SourceFormatter fmt : formatters) {
-        LOGGER.debug("\t- " + fmt.getName());
-      }
-    }
+      Option lsep = Option.builder("s").longOpt("linesep").required(false)
+            .hasArg(true).argName("crlf_value").build();
+      opts.addOption(lsep);
 
-    // apply formatters
-    if (Files.isRegularFile(path)) {
-      new FormatterVisitor().applyAllFormattersOnFile(path, formatters);
-    } else if (Files.isDirectory(path)) {
-      new FormatterVisitor().visitWithFormatters(path, formatters);
-    } else {
-      throw new IllegalArgumentException("unsupported path : " + path);
-    }
+      Option help = Option.builder("h").longOpt("help").hasArg(false)
+            .desc("Shows this help").build();
+      opts.addOption(help);
 
-    // apply transpilers (the order is ok // each transpiler has to be applied
-    // on every files one by one as they may be chained)
-    for (Transpiler transpiler : transpilers) {
-      if (Files.isRegularFile(path)) {
-        new FormatterVisitor().applyTranspilerOnFile(path, transpiler);
-      } else if (Files.isDirectory(path)) {
-        new FormatterVisitor().visitWithTranspiler(path, transpiler);
+      CommandLine cmd = new DefaultParser().parse(opts, args);
+
+      List<Transpiler> transpilers = Arrays.asList(new Freemarker(),
+            new CoffeeScript(), new Compass(), new Minifier());
+
+      JavaFormatter javaFormatter;
+      List<SourceFormatter> formatters = new ArrayList<SourceFormatter>();
+
+      // Look for formatter profile file in home directory
+      File profileFile = new File(System.getProperty("user.home"),
+            FORMATTER_PROFILE_FILENAME);
+      if (cmd.hasOption("conf")) {
+         javaFormatter = new JavaFormatter(Paths
+               .get(cmd.getOptionValue("conf")).toUri().toURL());
+      } else if (profileFile.exists()) {
+         javaFormatter = new JavaFormatter(profileFile.toURL());
       } else {
-        throw new IllegalArgumentException("unsupported path : " + path);
+         javaFormatter = new JavaFormatter();
       }
-    }
+      formatters.add(javaFormatter);
+      formatters.addAll(Arrays.asList(new HtmlFormatter(), new CssFormatter(),
+            new JsFormatter(), new XmlFormatter()));
 
-  }
+      if (cmd.hasOption("help")) {
+         showHelp(opts, formatters, transpilers);
+         return;
+      }
+
+      if (cmd.hasOption("level")) {
+         javaFormatter.setSource(cmd.getOptionValue("level"));
+      }
+
+      if (cmd.hasOption("encoding")) {
+         javaFormatter.setEncoding(cmd.getOptionValue("encoding"));
+      }
+
+      if (cmd.hasOption("linesep")) {
+         String linesep = cmd.getOptionValue("linesep");
+         if (!Arrays.asList("lf", "cr", "crlf").contains(linesep)) {
+            throw new IllegalArgumentException(
+                  "linesep : must be one of ['lf', 'cr', 'crlf']");
+         }
+         linesep = linesep.toLowerCase().replaceAll("cr", "\r")
+               .replaceAll("lf", "\n");
+         javaFormatter.setLineSep(linesep);
+      }
+
+      if (cmd.hasOption("header")) {
+         javaFormatter.setHeader(Paths.get(cmd.getOptionValue("header"))
+               .toUri().toURL());
+      }
+
+      if (args.length == 0) {
+         System.out.println("Missing file or directory parameter.");
+         showHelp(opts, formatters, transpilers);
+         System.exit(255);
+      }
+
+      Path path = Paths.get(args[args.length - 1]);
+
+      if (LOGGER.isDebugEnabled()) {
+         LOGGER.debug("Registered formatters : ");
+         for (SourceFormatter fmt : formatters) {
+            LOGGER.debug("\t- " + fmt.getName());
+         }
+      }
+
+      // apply formatters
+      if (Files.isRegularFile(path)) {
+         new FormatterVisitor().applyAllFormattersOnFile(path, formatters);
+      } else if (Files.isDirectory(path)) {
+         new FormatterVisitor().visitWithFormatters(path, formatters);
+      } else {
+         throw new IllegalArgumentException("unsupported path : " + path);
+      }
+
+      // apply transpilers (the order is ok // each transpiler has to be applied
+      // on every files one by one as they may be chained)
+      for (Transpiler transpiler : transpilers) {
+         if (Files.isRegularFile(path)) {
+            new FormatterVisitor().applyTranspilerOnFile(path, transpiler);
+         } else if (Files.isDirectory(path)) {
+            new FormatterVisitor().visitWithTranspiler(path, transpiler);
+         } else {
+            throw new IllegalArgumentException("unsupported path : " + path);
+         }
+      }
+
+   }
 }

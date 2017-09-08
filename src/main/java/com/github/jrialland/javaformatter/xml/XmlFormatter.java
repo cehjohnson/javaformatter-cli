@@ -42,47 +42,49 @@ import com.github.jrialland.javaformatter.SourceFormatter;
 
 public class XmlFormatter implements SourceFormatter {
 
-  private static final List<String> extensions = Arrays.asList(".xml", ".xhtml", ".svg");
+   private static final List<String> extensions = Arrays.asList(".xml",
+         ".xhtml", ".svg");
 
-  @Override
-  public String apply(String xmlFile) {
-    try {
-      Transformer transformer = TransformerFactory.newInstance().newTransformer();
-      transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-      StringWriter sw = new StringWriter();
-      StreamResult r = new StreamResult(sw);
-      StreamSource s = new StreamSource(new StringReader(xmlFile));
-      transformer.transform(s, r);
-      return sw.toString();
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
-  }
-
-  @Override
-  public String getName() {
-    return "Xml formatter";
-  }
-
-  @Override
-  public String getType() {
-    return "xml";
-  }
-
-  @Override
-  public boolean mayApplyOn(Path file) {
-    if (Files.isRegularFile(file)) {
-      for (String ext : extensions) {
-        if (file.toString().endsWith(ext)) {
-          return true;
-        }
+   @Override
+   public String apply(String xmlFile) {
+      try {
+         Transformer transformer = TransformerFactory.newInstance()
+               .newTransformer();
+         transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+         StringWriter sw = new StringWriter();
+         StreamResult r = new StreamResult(sw);
+         StreamSource s = new StreamSource(new StringReader(xmlFile));
+         transformer.transform(s, r);
+         return sw.toString();
+      } catch (Exception e) {
+         throw new RuntimeException(e);
       }
-    }
-    return false;
-  }
+   }
 
-  @Override
-  public String getShortDesc() {
-    return "Formats xml files (.xml, *.xhtml, *.svg)";
-  }
+   @Override
+   public String getName() {
+      return "Xml formatter";
+   }
+
+   @Override
+   public String getType() {
+      return "xml";
+   }
+
+   @Override
+   public boolean mayApplyOn(Path file) {
+      if (Files.isRegularFile(file)) {
+         for (String ext : extensions) {
+            if (file.toString().endsWith(ext)) {
+               return true;
+            }
+         }
+      }
+      return false;
+   }
+
+   @Override
+   public String getShortDesc() {
+      return "Formats xml files (.xml, *.xhtml, *.svg)";
+   }
 }

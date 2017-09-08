@@ -31,20 +31,20 @@ import java.util.Map;
 
 public class Profiles {
 
-	public static final String PROFILE_KIND = "CodeFormatterProfile";
+   public static final String PROFILE_KIND = "CodeFormatterProfile";
 
-	private List<Map<String, String>> profiles = new ArrayList<Map<String, String>>();
+   private List<Map<String, String>> profiles = new ArrayList<Map<String, String>>();
 
-	public Profiles() {
-	}
+   public Profiles() {
+   }
 
-	public void addProfile(Profile profile) {
-		if (PROFILE_KIND.equals(profile.getKind())) {
-			profiles.add(profile.getSettings());
-		}
-	}
+   public void addProfile(Profile profile) {
+      if (PROFILE_KIND.equals(profile.getKind())) {
+         profiles.add(profile.getSettings());
+      }
+   }
 
-	public List<Map<String, String>> getProfiles() {
-		return profiles;
-	}
+   public List<Map<String, String>> getProfiles() {
+      return profiles;
+   }
 }

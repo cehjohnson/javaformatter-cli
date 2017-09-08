@@ -38,36 +38,40 @@ import com.github.jrialland.javaformatter.SourceFormatter;
 
 public abstract class AbstractJsBeautifyFormatter implements SourceFormatter {
 
-  private final String FNCTNAME = "__" + getClass().getSimpleName();
+   private final String FNCTNAME = "__" + getClass().getSimpleName();
 
-  private ScriptEngine scriptEngine;
+   private ScriptEngine scriptEngine;
 
-  public AbstractJsBeautifyFormatter(String script, String fnct, String options) {
-    try {
-      initContext(script, fnct, options);
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
-  }
+   public AbstractJsBeautifyFormatter(String script, String fnct, String options) {
+      try {
+         initContext(script, fnct, options);
+      } catch (Exception e) {
+         throw new RuntimeException(e);
+      }
+   }
 
-  protected void initContext(String scriptPath, String fnctName, String options) throws Exception {
-    scriptEngine = new ScriptEngineManager().getEngineByName("js");
-    scriptEngine.eval("var global = {};");
-    Reader in = new InputStreamReader(JsFormatter.class.getClassLoader().getResourceAsStream(scriptPath));
-    scriptEngine.eval(in);
-    scriptEngine.eval("var " + FNCTNAME + "=function(txt){return global." + fnctName + "(txt," + options + ");}");
-  }
+   protected void initContext(String scriptPath, String fnctName, String options)
+         throws Exception {
+      scriptEngine = new ScriptEngineManager().getEngineByName("js");
+      scriptEngine.eval("var global = {};");
+      Reader in = new InputStreamReader(JsFormatter.class.getClassLoader()
+            .getResourceAsStream(scriptPath));
+      scriptEngine.eval(in);
+      scriptEngine.eval("var " + FNCTNAME + "=function(txt){return global."
+            + fnctName + "(txt," + options + ");}");
+   }
 
-  @Override
-  public String apply(String js) {
+   @Override
+   public String apply(String js) {
 
-    Bindings bindings = scriptEngine.getBindings(ScriptContext.ENGINE_SCOPE);
-    bindings.put("__jsdata__", js);
-    try {
-      Object result = scriptEngine.eval(FNCTNAME + "(__jsdata__);", bindings);
-      return result.toString();
-    } catch (ScriptException e) {
-      throw new RuntimeException(e);
-    }
-  }
+      Bindings bindings = scriptEngine.getBindings(ScriptContext.ENGINE_SCOPE);
+      bindings.put("__jsdata__", js);
+      try {
+         Object result = scriptEngine
+               .eval(FNCTNAME + "(__jsdata__);", bindings);
+         return result.toString();
+      } catch (ScriptException e) {
+         throw new RuntimeException(e);
+      }
+   }
 }

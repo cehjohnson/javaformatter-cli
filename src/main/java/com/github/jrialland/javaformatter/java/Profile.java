@@ -30,25 +30,25 @@ import java.util.Map;
 
 public class Profile {
 
-	private String kind;
-	private Map<String, String> settings = new HashMap<String, String>();
+   private String kind;
+   private Map<String, String> settings = new HashMap<String, String>();
 
-	public Profile() {
-	}
+   public Profile() {
+   }
 
-	public void addSetting(Setting setting) {
-		settings.put(setting.getId(), setting.getValue());
-	}
+   public void addSetting(Setting setting) {
+      settings.put(setting.getId(), setting.getValue());
+   }
 
-	public Map<String, String> getSettings() {
-		return settings;
-	}
+   public Map<String, String> getSettings() {
+      return settings;
+   }
 
-	public String getKind() {
-		return kind;
-	}
+   public String getKind() {
+      return kind;
+   }
 
-	public void setKind(String kind) {
-		this.kind = kind;
-	}
+   public void setKind(String kind) {
+      this.kind = kind;
+   }
 }

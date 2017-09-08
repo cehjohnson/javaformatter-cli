@@ -52,70 +52,71 @@ import com.github.jrialland.javaformatter.Transpiler;
  * </code>
  * 
  * @author Julien.Rialland
- *
+ * 
  */
 public class Compass implements Transpiler {
 
-	private Callable<Compiler> callable;
+   private Callable<Compiler> callable;
 
-	private File configFile;
-	
-	public Compass() {
-		callable = new Callable<Compiler>() {
-			@Override
-			public Compiler call() throws Exception {
-				final Compiler compiler = new Compiler();
-				callable = new Callable<Compiler>() {
-					@Override
-					public Compiler call() throws Exception {
-						return compiler;
-					}
-				};
-				return compiler;
-			}
-		};
-	}
+   private File configFile;
 
-	protected Compiler getCompiler() {
-		try {
-			return callable.call();
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
+   public Compass() {
+      callable = new Callable<Compiler>() {
+         @Override
+         public Compiler call() throws Exception {
+            final Compiler compiler = new Compiler();
+            callable = new Callable<Compiler>() {
+               @Override
+               public Compiler call() throws Exception {
+                  return compiler;
+               }
+            };
+            return compiler;
+         }
+      };
+   }
 
-	@Override
-	public boolean accept(Path path) {
-		if( Files.isRegularFile(path) && path.getFileName().toString().equals("compass.rb")) {
-			setConfigFile(path.toFile());
-			return true;
-		}
-		return false;
-	}
+   protected Compiler getCompiler() {
+      try {
+         return callable.call();
+      } catch (Exception e) {
+         throw new RuntimeException(e);
+      }
+   }
 
-	public void setConfigFile(File configFile) {
-		this.configFile = configFile;
-	}
-	
-	@Override
-	public void transpile(Path file) {
-		Compiler compiler = getCompiler();
-		compiler.setConfigLocation(configFile);
-		compiler.compile();
-	}
+   @Override
+   public boolean accept(Path path) {
+      if (Files.isRegularFile(path)
+            && path.getFileName().toString().equals("compass.rb")) {
+         setConfigFile(path.toFile());
+         return true;
+      }
+      return false;
+   }
 
-	@Override
-	public String getName() {
-		return "Sass";
-	}
+   public void setConfigFile(File configFile) {
+      this.configFile = configFile;
+   }
 
-	@Override
-	public String getType() {
-		return "sass";
-	}
+   @Override
+   public void transpile(Path file) {
+      Compiler compiler = getCompiler();
+      compiler.setConfigLocation(configFile);
+      compiler.compile();
+   }
 
-	@Override
-	public String getShortdesc() {
-	  return "Runs compass (http://compass-style.org/) on compass.rb";
-	}
+   @Override
+   public String getName() {
+      return "Sass";
+   }
+
+   @Override
+   public String getType() {
+      return "sass";
+   }
+
+   @Override
+   public String getShortdesc() {
+      return "Runs compass (http://compass-style.org/) on compass.rb";
+   }
 }

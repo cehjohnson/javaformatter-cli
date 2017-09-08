@@ -29,13 +29,13 @@ import java.nio.file.Path;
 
 public interface SourceFormatter {
 
-	public String getName();
+   public String getName();
 
-	public String getType();
+   public String getType();
 
-	public boolean mayApplyOn(Path file);
+   public boolean mayApplyOn(Path file);
 
-	public String apply(String fileContent);
+   public String apply(String fileContent);
 
-	public String getShortDesc();
+   public String getShortDesc();
 }
