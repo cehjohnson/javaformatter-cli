@@ -41,15 +41,7 @@ import org.apache.commons.cli.Options;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.jrialland.javaformatter.coffescript.CoffeeScript;
-import com.github.jrialland.javaformatter.compass.Compass;
-import com.github.jrialland.javaformatter.freemarker.Freemarker;
 import com.github.jrialland.javaformatter.java.JavaFormatter;
-import com.github.jrialland.javaformatter.minify.Minifier;
-import com.github.jrialland.javaformatter.web.CssFormatter;
-import com.github.jrialland.javaformatter.web.HtmlFormatter;
-import com.github.jrialland.javaformatter.web.JsFormatter;
-import com.github.jrialland.javaformatter.xml.XmlFormatter;
 
 public class FormatterCli {
 
@@ -58,7 +50,7 @@ public class FormatterCli {
    private static final String FORMATTER_PROFILE_FILENAME = "formatter-profile.xml";
 
    protected static void showHelp(Options opts,
-         List<SourceFormatter> sourceFormatters, List<Transpiler> transpilers) {
+         List<SourceFormatter> sourceFormatters) {
       HelpFormatter helpFormatter = new HelpFormatter();
       helpFormatter.printHelp(FormatterCli.class.getSimpleName(), opts);
       System.out.println();
@@ -68,16 +60,6 @@ public class FormatterCli {
          System.out.println("\t* " + fmt.getName() + " (" + fmt.getShortDesc()
                + ")");
       }
-      System.out.println();
-
-      System.out.println("Available transpilers : ");
-      for (Transpiler transpiler : transpilers) {
-         System.out.println("\t* " + transpiler.getName() + " ("
-               + transpiler.getShortdesc() + ")");
-      }
-      System.out.println();
-
-      return;
    }
 
    public static void main(String[] args) throws Exception {
@@ -113,9 +95,6 @@ public class FormatterCli {
 
       CommandLine cmd = new DefaultParser().parse(opts, args);
 
-      List<Transpiler> transpilers = Arrays.asList(new Freemarker(),
-            new CoffeeScript(), new Compass(), new Minifier());
-
       JavaFormatter javaFormatter;
       List<SourceFormatter> formatters = new ArrayList<SourceFormatter>();
 
@@ -131,11 +110,9 @@ public class FormatterCli {
          javaFormatter = new JavaFormatter();
       }
       formatters.add(javaFormatter);
-      formatters.addAll(Arrays.asList(new HtmlFormatter(), new CssFormatter(),
-            new JsFormatter(), new XmlFormatter()));
 
       if (cmd.hasOption("help")) {
-         showHelp(opts, formatters, transpilers);
+         showHelp(opts, formatters);
          return;
       }
 
@@ -165,7 +142,7 @@ public class FormatterCli {
 
       if (args.length == 0) {
          System.out.println("Missing file or directory parameter.");
-         showHelp(opts, formatters, transpilers);
+         showHelp(opts, formatters);
          System.exit(255);
       }
 
@@ -187,17 +164,6 @@ public class FormatterCli {
          throw new IllegalArgumentException("unsupported path : " + path);
       }
 
-      // apply transpilers (the order is ok // each transpiler has to be applied
-      // on every files one by one as they may be chained)
-      for (Transpiler transpiler : transpilers) {
-         if (Files.isRegularFile(path)) {
-            new FormatterVisitor().applyTranspilerOnFile(path, transpiler);
-         } else if (Files.isDirectory(path)) {
-            new FormatterVisitor().visitWithTranspiler(path, transpiler);
-         } else {
-            throw new IllegalArgumentException("unsupported path : " + path);
-         }
-      }
 
    }
 }
