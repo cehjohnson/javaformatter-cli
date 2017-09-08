@@ -25,6 +25,7 @@
  */
 package com.github.jrialland.javaformatter;
 
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -53,6 +54,7 @@ import com.github.jrialland.javaformatter.xml.XmlFormatter;
 public class FormatterCli {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(FormatterCli.class);
+  private static final String FORMATTER_PROFILE_FILENAME = "formatter-profile.xml";
 
   protected static void showHelp(Options opts, List<SourceFormatter> sourceFormatters, List<Transpiler> transpilers) {
     HelpFormatter helpFormatter = new HelpFormatter();
@@ -105,10 +107,14 @@ public class FormatterCli {
     List<Transpiler> transpilers = Arrays.asList(new Freemarker(), new CoffeeScript(), new Compass(), new Minifier());
 
     JavaFormatter javaFormatter;
-    List<SourceFormatter> formatters = new ArrayList<>();
+    List<SourceFormatter> formatters = new ArrayList<SourceFormatter>();
 
+    // Look for formatter profile file in home directory
+    File profileFile = new File(System.getProperty("java.home"), FORMATTER_PROFILE_FILENAME);
     if (cmd.hasOption("conf")) {
       javaFormatter = new JavaFormatter(Paths.get(cmd.getOptionValue("conf")).toUri().toURL());
+    } else if (profileFile.exists()) {
+      javaFormatter = new JavaFormatter(profileFile.toURL());
     } else {
       javaFormatter = new JavaFormatter();
     }
