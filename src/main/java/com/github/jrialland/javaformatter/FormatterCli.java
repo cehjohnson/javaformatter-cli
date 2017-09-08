@@ -110,7 +110,7 @@ public class FormatterCli {
     List<SourceFormatter> formatters = new ArrayList<SourceFormatter>();
 
     // Look for formatter profile file in home directory
-    File profileFile = new File(System.getProperty("java.home"), FORMATTER_PROFILE_FILENAME);
+    File profileFile = new File(System.getProperty("user.home"), FORMATTER_PROFILE_FILENAME);
     if (cmd.hasOption("conf")) {
       javaFormatter = new JavaFormatter(Paths.get(cmd.getOptionValue("conf")).toUri().toURL());
     } else if (profileFile.exists()) {
