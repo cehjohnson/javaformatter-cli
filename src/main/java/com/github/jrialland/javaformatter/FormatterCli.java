@@ -25,6 +25,8 @@
  */
 package com.github.jrialland.javaformatter;
 
+import java.net.URL;
+
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -47,7 +49,8 @@ public class FormatterCli {
 
    private static final Logger LOGGER = LoggerFactory
          .getLogger(FormatterCli.class);
-   private static final String FORMATTER_PROFILE_FILENAME = "formatter-profile.xml";
+   private static final File FORMATTER_PROFILE_FILE = new File(
+         System.getProperty("user.home"), "formatter-profile.xml");
 
    protected static void showHelp(Options opts,
          List<SourceFormatter> sourceFormatters) {
@@ -99,14 +102,22 @@ public class FormatterCli {
       List<SourceFormatter> formatters = new ArrayList<SourceFormatter>();
 
       // Look for formatter profile file in home directory
-      File profileFile = new File(System.getProperty("user.home"),
-            FORMATTER_PROFILE_FILENAME);
       if (cmd.hasOption("conf")) {
-         javaFormatter = new JavaFormatter(Paths
-               .get(cmd.getOptionValue("conf")).toUri().toURL());
-      } else if (profileFile.exists()) {
-         javaFormatter = new JavaFormatter(profileFile.toURL());
+         URL confUrl = Paths.get(cmd.getOptionValue("conf")).toUri().toURL();
+         javaFormatter = new JavaFormatter(confUrl);
+         if (LOGGER.isInfoEnabled()) {
+            LOGGER.info("Using command line configuration with url {}", confUrl);
+         }
+      } else if (FORMATTER_PROFILE_FILE.exists()) {
+         if (LOGGER.isInfoEnabled()) {
+            LOGGER.info("Using home directory configuration at {}",
+                  FORMATTER_PROFILE_FILE);
+         }
+         javaFormatter = new JavaFormatter(FORMATTER_PROFILE_FILE.toURL());
       } else {
+         if (LOGGER.isInfoEnabled()) {
+            LOGGER.info("No configuration found. Using Eclipse default formatting");
+         }
          javaFormatter = new JavaFormatter();
       }
       formatters.add(javaFormatter);
@@ -163,7 +174,6 @@ public class FormatterCli {
       } else {
          throw new IllegalArgumentException("unsupported path : " + path);
       }
-
 
    }
 }
