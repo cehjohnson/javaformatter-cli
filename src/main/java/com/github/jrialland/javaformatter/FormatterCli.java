@@ -116,7 +116,7 @@ public class FormatterCli {
          javaFormatter = new JavaFormatter(FORMATTER_PROFILE_FILE.toURL());
       } else {
          if (LOGGER.isInfoEnabled()) {
-            LOGGER.info("No configuration found. Using Eclipse default formatting");
+            LOGGER.info("No command line configuration parameter found, nor home directory configuration of {}. Using Eclipse default formatting", FORMATTER_PROFILE_FILE);
          }
          javaFormatter = new JavaFormatter();
       }
