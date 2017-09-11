@@ -83,8 +83,6 @@ public class FormatterVisitor {
       }
    }
 
-
-
    public void applyAllFormattersOnFile(Path file,
          List<SourceFormatter> formatters) throws IOException {
       Path tmpFile = Paths.get(file.toAbsolutePath().toString() + "~");
