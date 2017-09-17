@@ -88,6 +88,7 @@ public class JavaFormatter implements SourceFormatter {
          }
          is.close();
          headerComment = StringUtil.toJavaComment(baos.toString("utf-8"));
+	 LOGGER.debug("Setting header {} from source {}", headerComment, headerUrl);
       } catch (Exception e) {
          throw new RuntimeException(e);
       }

@@ -99,12 +99,12 @@ public class FormatterVisitor {
 
                String strData = new String(data);
 
-               getLog().info(
+               getLog().debug(
                      "applying : " + formatter.getType() + "\ton "
                            + file.toString());
 
                String modified = formatter.apply(strData);
-               getLog().info(" .. done");
+               getLog().debug(" .. done");
                Files.copy(new ByteArrayInputStream(modified.getBytes()), file,
                      StandardCopyOption.REPLACE_EXISTING);
 
