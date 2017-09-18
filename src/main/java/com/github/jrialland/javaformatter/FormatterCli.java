@@ -53,7 +53,9 @@ import java.util.List;
 
 
 public class FormatterCli {
+        private static Level DEFAULT_LOGGING_LEVEL = Level.INFO;
     private static final Logger LOGGER = LoggerFactory.getLogger(FormatterCli.class);
+    private static String INTERNAL_FORMATTER_CONFIG_URL = "/config/formatter-profile.xml";
     private static final File FORMATTER_PROFILE_FILE = new File(System.getProperty(
                 "user.home"), "formatter-profile.xml");
 
@@ -115,8 +117,8 @@ public class FormatterCli {
         List<SourceFormatter> formatters = new ArrayList<SourceFormatter>();
 
         // Set the logging level programmatically to make it easy for users
-        // Need Commons CLI >= 1.5 to use the variable (loggingLevel)
-        Level rootLoggingLevel = Level.WARN;
+        // Need Commons CLI >= 1.5 to use the variable (loggingLevel) - that's nuts
+        Level rootLoggingLevel = DEFAULT_LOGGING_LEVEL;
 
         if (cmd.hasOption("log")) {
             String strLevel = cmd.getOptionValue("log");
@@ -131,7 +133,7 @@ public class FormatterCli {
         }
 
         ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
-	root.setLevel(rootLoggingLevel);
+        root.setLevel(rootLoggingLevel);
 
         // Look for formatter profile file in home directory
         if (cmd.hasOption("conf")) {
@@ -151,11 +153,11 @@ public class FormatterCli {
             javaFormatter = new JavaFormatter(FORMATTER_PROFILE_FILE.toURL());
         } else {
             if (LOGGER.isInfoEnabled()) {
-                LOGGER.info("No command line configuration parameter found, nor home directory configuration of {}. Using Eclipse default formatting",
-                    FORMATTER_PROFILE_FILE);
+                LOGGER.info("No command line configuration parameter found, nor home directory configuration of {}. Using internal formatter configuration, which should be found at {}.",
+                    FORMATTER_PROFILE_FILE, INTERNAL_FORMATTER_CONFIG_URL);
             }
 
-            javaFormatter = new JavaFormatter();
+            javaFormatter = new JavaFormatter(FormatterCli.class.getResource(INTERNAL_FORMATTER_CONFIG_URL));
         }
 
         formatters.add(javaFormatter);
