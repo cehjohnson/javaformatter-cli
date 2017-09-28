@@ -44,9 +44,6 @@ public class FormatterVisitor {
    private static final Logger LOGGER = LoggerFactory
          .getLogger(FormatterVisitor.class);
 
-   private static final Logger getLog() {
-      return LOGGER;
-   }
 
    public void visitWithFormatters(Path dir,
          final List<SourceFormatter> formatters) {
@@ -96,15 +93,13 @@ public class FormatterVisitor {
             Files.move(file, tmpFile, StandardCopyOption.REPLACE_EXISTING);
 
             try {
-
                String strData = new String(data);
-
-               getLog().debug(
-                     "applying : " + formatter.getType() + "\ton "
-                           + file.toString());
-
+               LOGGER.debug("Applying formatter '{}' on {} ...", formatter.getType(), file.toString());
                String modified = formatter.apply(strData);
-               getLog().debug(" .. done");
+               LOGGER.debug("... done.");
+	       if (strData.equals(modified)) {
+		   LOGGER.warn("No formatting was done on {}. Check that the file compiles if you're not happy", file.toString());
+	       }
                Files.copy(new ByteArrayInputStream(modified.getBytes()), file,
                      StandardCopyOption.REPLACE_EXISTING);
 
@@ -112,7 +107,7 @@ public class FormatterVisitor {
                Files.delete(tmpFile);
 
             } catch (Exception e) {
-               getLog().error("formatter error", e);
+               LOGGER.error("Formatter error", e);
 
                // replace file with the backup in case of error
                Files.move(tmpFile, file, StandardCopyOption.REPLACE_EXISTING);

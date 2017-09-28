@@ -107,7 +107,7 @@ public class FormatterCli {
 
         Option loggingLevel = Option.builder("log").longOpt("logging-level")
                                     .hasArg(true)
-                                    .desc("Logging level in force <debug|info|warn>")
+                                    .desc("Logging level in force <debug|info|warn|error>")
                                     .build();
         opts.addOption(loggingLevel);
 
@@ -123,7 +123,7 @@ public class FormatterCli {
         if (cmd.hasOption("log")) {
             String strLevel = cmd.getOptionValue("log");
 
-            if (strLevel.matches("debug|info|warn")) {
+            if (strLevel.matches("debug|info|warn|error")) {
                 rootLoggingLevel = Level.toLevel(strLevel);
             } else {
                 throw new RuntimeException(String.format(
