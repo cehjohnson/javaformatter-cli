@@ -51,16 +51,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-
 public class FormatterCli {
-        private static Level DEFAULT_LOGGING_LEVEL = Level.INFO;
+    private static Level DEFAULT_LOGGING_LEVEL = Level.INFO;
     private static final Logger LOGGER = LoggerFactory.getLogger(FormatterCli.class);
     private static String INTERNAL_FORMATTER_CONFIG_URL = "/config/formatter-profile.xml";
-    private static final File FORMATTER_PROFILE_FILE = new File(System.getProperty(
-                "user.home"), "formatter-profile.xml");
+    private static final File FORMATTER_PROFILE_FILE = new File(System.getProperty("user.home"),
+            "formatter-profile.xml");
 
-    protected static void showHelp(Options opts,
-        List<SourceFormatter> sourceFormatters) {
+    protected static void showHelp(Options opts, List<SourceFormatter> sourceFormatters) {
         HelpFormatter helpFormatter = new HelpFormatter();
         helpFormatter.printHelp(FormatterCli.class.getSimpleName(), opts);
         System.out.println();
@@ -68,47 +66,37 @@ public class FormatterCli {
         System.out.println("Available source formatters : ");
 
         for (SourceFormatter fmt : sourceFormatters) {
-            System.out.println("\t* " + fmt.getName() + " (" +
-                fmt.getShortDesc() + ")");
+            System.out.println("\t* " + fmt.getName() + " (" + fmt.getShortDesc() + ")");
         }
     }
 
     public static void main(String[] args) throws Exception {
         Options opts = new Options();
 
-        Option conf = Option.builder("c").longOpt("conf").required(false)
-                            .numberOfArgs(1)
-                            .desc("Eclipse configuration file to use")
-                            .argName("eclipseConf").build();
+        Option conf = Option.builder("c").longOpt("conf").required(false).numberOfArgs(1)
+                .desc("Eclipse configuration file to use").argName("eclipseConf").build();
         opts.addOption(conf);
 
-        Option level = Option.builder("l").longOpt("level").required(false)
-                             .numberOfArgs(1).argName("javaVersion")
-                             .desc("source level").build();
+        Option level = Option.builder("l").longOpt("level").required(false).numberOfArgs(1).argName("javaVersion")
+                .desc("source level").build();
         opts.addOption(level);
 
-        Option header = Option.builder("H").longOpt("header").required(false)
-                              .numberOfArgs(1).argName("txtFile")
-                              .desc("source file header").build();
+        Option header = Option.builder("H").longOpt("header").required(false).numberOfArgs(1).argName("txtFile")
+                .desc("source file header").build();
         opts.addOption(header);
 
-        Option encoding = Option.builder("e").longOpt("encoding").required(false)
-                                .numberOfArgs(1).argName("charset")
-                                .desc("source encoding").build();
+        Option encoding = Option.builder("e").longOpt("encoding").required(false).numberOfArgs(1).argName("charset")
+                .desc("source encoding").build();
         opts.addOption(encoding);
 
-        Option lsep = Option.builder("s").longOpt("linesep").required(false)
-                            .hasArg(true).argName("crlf_value").build();
+        Option lsep = Option.builder("s").longOpt("linesep").required(false).hasArg(true).argName("crlf_value").build();
         opts.addOption(lsep);
 
-        Option help = Option.builder("h").longOpt("help").hasArg(false)
-                            .desc("Shows this help").build();
+        Option help = Option.builder("h").longOpt("help").hasArg(false).desc("Shows this help").build();
         opts.addOption(help);
 
-        Option loggingLevel = Option.builder("log").longOpt("logging-level")
-                                    .hasArg(true)
-                                    .desc("Logging level in force <debug|info|warn|error>")
-                                    .build();
+        Option loggingLevel = Option.builder("log").longOpt("logging-level").hasArg(true)
+                .desc("Logging level in force <debug|info|warn|error>").build();
         opts.addOption(loggingLevel);
 
         CommandLine cmd = new DefaultParser().parse(opts, args);
@@ -126,13 +114,13 @@ public class FormatterCli {
             if (strLevel.matches("debug|info|warn|error")) {
                 rootLoggingLevel = Level.toLevel(strLevel);
             } else {
-                throw new RuntimeException(String.format(
-                        "The logging level of '%s' is invalid. Only debug|info|warn allowed",
-                        strLevel));
+                throw new RuntimeException(
+                        String.format("The logging level of '%s' is invalid. Only debug|info|warn allowed", strLevel));
             }
         }
 
-        ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+        ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) LoggerFactory
+                .getLogger(Logger.ROOT_LOGGER_NAME);
         root.setLevel(rootLoggingLevel);
 
         // Look for formatter profile file in home directory
@@ -141,20 +129,19 @@ public class FormatterCli {
             javaFormatter = new JavaFormatter(confUrl);
 
             if (LOGGER.isInfoEnabled()) {
-                LOGGER.info("Using command line configuration with url {}",
-                    confUrl);
+                LOGGER.info("Using command line configuration with url {}", confUrl);
             }
         } else if (FORMATTER_PROFILE_FILE.exists()) {
             if (LOGGER.isInfoEnabled()) {
-                LOGGER.info("Using home directory configuration at {}",
-                    FORMATTER_PROFILE_FILE);
+                LOGGER.info("Using home directory configuration at {}", FORMATTER_PROFILE_FILE);
             }
 
             javaFormatter = new JavaFormatter(FORMATTER_PROFILE_FILE.toURL());
         } else {
             if (LOGGER.isInfoEnabled()) {
-                LOGGER.info("No command line configuration parameter found, nor home directory configuration of {}. Using internal formatter configuration, which should be found at {}.",
-                    FORMATTER_PROFILE_FILE, INTERNAL_FORMATTER_CONFIG_URL);
+                LOGGER.info(
+                        "No command line configuration parameter found, nor home directory configuration of {}. Using internal formatter configuration, which should be found at {}.",
+                        FORMATTER_PROFILE_FILE, INTERNAL_FORMATTER_CONFIG_URL);
             }
 
             javaFormatter = new JavaFormatter(FormatterCli.class.getResource(INTERNAL_FORMATTER_CONFIG_URL));
@@ -180,43 +167,44 @@ public class FormatterCli {
             String linesep = cmd.getOptionValue("linesep");
 
             if (!Arrays.asList("lf", "cr", "crlf").contains(linesep)) {
-                throw new IllegalArgumentException(
-                    "linesep : must be one of ['lf', 'cr', 'crlf']");
+                throw new IllegalArgumentException("linesep : must be one of ['lf', 'cr', 'crlf']");
             }
 
-            linesep = linesep.toLowerCase().replaceAll("cr", "\r")
-                             .replaceAll("lf", "\n");
+            linesep = linesep.toLowerCase().replaceAll("cr", "\r").replaceAll("lf", "\n");
             javaFormatter.setLineSep(linesep);
         }
 
         if (cmd.hasOption("header")) {
-            javaFormatter.setHeader(Paths.get(cmd.getOptionValue("header"))
-                                         .toUri().toURL());
+            javaFormatter.setHeader(Paths.get(cmd.getOptionValue("header")).toUri().toURL());
         }
 
-        if (args.length == 0) {
+        String[] nonOptionArgs = cmd.getArgs();
+        if (nonOptionArgs.length == 0) {
             System.out.println("Missing file or directory parameter.");
             showHelp(opts, formatters);
             System.exit(255);
-        }
-
-        Path path = Paths.get(args[args.length - 1]);
-
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("Registered formatters : ");
-
-            for (SourceFormatter fmt : formatters) {
-                LOGGER.debug("\t- " + fmt.getName());
-            }
-        }
-
-        // apply formatters
-        if (Files.isRegularFile(path)) {
-            new FormatterVisitor().applyAllFormattersOnFile(path, formatters);
-        } else if (Files.isDirectory(path)) {
-            new FormatterVisitor().visitWithFormatters(path, formatters);
         } else {
-            throw new IllegalArgumentException("unsupported path : " + path);
+            for (String arg : nonOptionArgs) {
+
+                Path path = Paths.get(arg);
+
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("Registered formatters : ");
+
+                    for (SourceFormatter fmt : formatters) {
+                        LOGGER.debug("\t- " + fmt.getName());
+                    }
+                }
+
+                // apply formatters
+                if (Files.isRegularFile(path)) {
+                    new FormatterVisitor().applyAllFormattersOnFile(path, formatters);
+                } else if (Files.isDirectory(path)) {
+                    new FormatterVisitor().visitWithFormatters(path, formatters);
+                } else {
+                    throw new IllegalArgumentException("unsupported path : " + path);
+                }
+            }
         }
     }
 }
