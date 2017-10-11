@@ -21,6 +21,16 @@
 	</repository>
     </repositories>
     <build>
+	<resources>
+	    <resource>
+		<directory>src</directory>
+		<includes>
+		    <include>gpl-3.0.txt</include>
+
+		</includes>
+	    </resource>
+
+	</resources>
 	<plugins>
 	    <plugin>
 		<groupId>org.apache.maven.plugins</groupId>
